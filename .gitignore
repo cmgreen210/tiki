@@ -1,1 +1,3 @@
 torch/*
+data/*
+notebooks/.ipynb_checkpoints/*
