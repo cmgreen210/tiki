@@ -48,3 +48,23 @@ cmd:log(params.rundir .. '/log.txt', params)
 torch.manualSeed(params.seed)
 
 torch.setnumthreads(params.threads)
+
+if not paths.filep(params.dir .. "/../fiw.ascii") then
+    require 'image'
+    matio = require 'matio'
+    matio.use_lua_strings = true
+    print(params.dir .. "/../data/faceData/FacesInTheWild.mat")
+    faceData = matio.load(params.dir .. "/../data/faceData/FacesInTheWild.mat")
+    function loadFactData (idx)
+        p = params.dir .. "/../data/faceData/" .. faceData.metaData[idx]["fileName"]
+        return image.load(p)
+    end
+    num = #faceData.metaData
+    tensor = torch.Tensor(num, 3, 86, 86):type("torch.FloatTensor")
+    for n = 1,(num - 1) do
+	img = loadFactData(n):type("torch.FloatTensor")
+	img:resize(3, 86, 86)
+	tensor[n] = img
+    end
+    torch.save(params.dir .. "/../fiw.ascii", tensor, "ascii")
+end
